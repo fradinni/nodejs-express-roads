@@ -53,10 +53,12 @@ new compressor.minify({
 			 commentedLicense += (liscencePattern + lines[i] + '\n');
 		};
 
-		data += commentedLicense;data
+		data += commentedLicense;
 		data += footerTpl;
 
-		data = data.replace('${author}', author);
+		while(data.indexOf('${author}') != -1) {
+			data = data.replace('${author}', author);
+		}
 		data = data.replace('${version}', version);
 		data = data.replace('${date}', date);
 
@@ -69,7 +71,6 @@ new compressor.minify({
 		fs.unlink('./build/express-roads.min.js');
 
 		console.log('Optimized !');
-
     }
 });
 
