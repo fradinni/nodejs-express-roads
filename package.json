@@ -1,7 +1,7 @@
 {
   "name": "express-roads",
   "description": "NodeJS - Express Application and API Routes Management",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "author":"Nicolas FRADIN",
   "homepage": "https://github.com/fradinni/nodejs-express-roads",
   "repository": {
