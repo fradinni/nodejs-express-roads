@@ -34,9 +34,10 @@ app.use(app.routes);
 
 // Initialize Express Roads
 ExpressRoads.initialize(app, {
-	routesDir: __dirname+'/routes'
+	baseDir: __dirname
+   ,routesDir: './routes'
    ,useAPI: true
-   ,apiBaseDir: __dirname+'/api'
+   ,apiBaseDir: './api'
    ,debug: true
 }, function() {
 

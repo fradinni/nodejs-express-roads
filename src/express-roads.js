@@ -1,7 +1,7 @@
 /******************************************************************************
  * Node JS Express Roads
  * ----------------------------------------------------------------------------
- * Version: 1.0.0
+ * Version: 0.0.1
  * Authors: Nicolas FRADIN
  * Date: 04/2013
  */
@@ -12,13 +12,9 @@ if (typeof define !== 'function') {
 
 define(function(require) {
 
-	/**
-	* Load Required modules
-	*/
 	var _ = require('underscore')
 	   ,fs = require('fs')
 	   ,path = require('path');
-
 
 	var __DEBUG = false;
 
@@ -32,6 +28,11 @@ define(function(require) {
 	* Initialize variable to handle Application
 	*/
 	var Application;
+
+	/**
+	*
+	*/
+	var __dirname;
 
 	/**
 	* Define routes base directory
@@ -125,6 +126,12 @@ define(function(require) {
 			throw new Error('[Routes] Application is not defined !');
 		}
 
+		if(!params.baseDir) {
+			throw new Error('[Routes] Base directory is not defined !');
+		}
+		__dirname = params.baseDir;
+
+
 		if(!params.routesDir) {
 			throw new Error('[Routes] How can we setup routes without a base directory ??? Please specify it {params.routesDir} :)');
 		}
@@ -135,7 +142,7 @@ define(function(require) {
 		if(__DEBUG) logger.log("[Routes] -> Allowed extensions: ", JSON.stringify(__allowedExts));
 
 		// Set routes base directory
-		__routesBaseDir = params.routesDir;
+		__routesBaseDir = path.normalize(__dirname + '/' + params.routesDir);
 		if(__DEBUG) logger.log("[Routes] -> Routes basedir: ", __routesBaseDir);
 
 		/**
@@ -153,28 +160,13 @@ define(function(require) {
 		* For example, if DEFAULT_API_VERSION=v1, calling /api/my_methods is the same as
 		* calling /api/v1/my_method.
 		*/	
-		if(!process.env.API_VERSIONS && !app.get('API_VERSIONS')) {
+		if(params.useAPI && !process.env.API_VERSIONS && !app.get('API_VERSIONS')) {
 			throw new Error("[Routes] No API version is specified ! Please set API_VERSIONS environment variable.");
 		}
-		if(!process.env.DEFAULT_API_VERSION && !app.get('DEFAULT_API_VERSION')) {
+		if(params.userAPI && !process.env.DEFAULT_API_VERSION && !app.get('DEFAULT_API_VERSION')) {
 			throw new Error("[Routes] Default API version is not specified ! Please set DEFAULT_API_VERSION environment variable.");	
 		}
 
-		/**
-		* Init API versions
-		*/
-		apiVersions = (process.env.API_VERSIONS || app.get('API_VERSIONS')).split(',');
-		if(!apiVersions || apiVersions.length < 1) {
-			throw new Error('[Routes] Unable to detremine which version of API to use !');
-		}
-
-		/**
-		* Init DEFAULT API version
-		*/
-		defaultApiVersion = process.env.DEFAULT_API_VERSION || app.get('DEFAULT_API_VERSION');
-		if(!defaultApiVersion) {
-			throw new Error('[Routes] Unable to detremine default API version !');
-		}
 
 		// Set Application
 		Application = app;
@@ -188,11 +180,28 @@ define(function(require) {
 		}
 		if(params.useAPI) {
 			// CHeck if API directory exists
-			if(!__APIDirectoryExists(params.apiBaseDir)) {
+			if(!__APIDirectoryExists(__dirname +'/'+params.apiBaseDir)) {
 				throw new Error('[Routes] Unable to find API directory: ' + params.apiBaseDir);
 			}
 
-			__apiBaseDir = params.apiBaseDir;
+			/**
+			* Init API versions
+			*/
+			
+			apiVersions = (process.env.API_VERSIONS || app.get('API_VERSIONS') || '').split(',');
+			if(!apiVersions || apiVersions.length < 1) {
+				throw new Error('[Routes] Unable to detremine which version of API to use !');
+			}
+
+			/**
+			* Init DEFAULT API version
+			*/
+			defaultApiVersion = process.env.DEFAULT_API_VERSION || app.get('DEFAULT_API_VERSION' || '');
+			if(!defaultApiVersion) {
+				throw new Error('[Routes] Unable to detremine default API version !');
+			}
+
+			__apiBaseDir = path.normalize(__dirname + '/' + params.apiBaseDir);
 			USE_API = true;
 			if(__DEBUG) logger.log("[Routes] -> API is ON");
 			if(__DEBUG) logger.log("[Routes] -> API basedir: " + __apiBaseDir);
@@ -580,6 +589,7 @@ define(function(require) {
 		    }
 		}
 		catch (e) {
+			console.log(e);
 		    return false;
 		}
 
@@ -612,7 +622,8 @@ define(function(require) {
 	var __APIVersionDirectoryExists = function(apiVersion) {
 		// Check if API version directory exists
 		try {
-		    stats = fs.lstatSync(__apiBaseDir + '/' + apiVersion);
+			var normalizedPath = path.normalize(__apiBaseDir + '/' + apiVersion);
+		    stats = fs.lstatSync(normalizedPath);
 		    if (!stats.isDirectory()) {
 		    	return false;
 		    }
@@ -679,13 +690,11 @@ define(function(require) {
 
 	///////////////////////////////////////////////////////////////////////////
 
-
-
 	//
 	// Export module methods
 	//
     return {
-		initialize: initialize
-	};
+ 		initialize: initialize
+	}
 
 });
