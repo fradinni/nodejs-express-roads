@@ -4,18 +4,20 @@ nodejs-express-roads
  NodeJS - Express Application and API Routes Management 
  
  
- #Installation
+##Installation
  
- npm install express-roads
+    npm install express-roads
  
- #Use
+##Use
  
- var app = express();
- var ExpressRoads = require('express-roads');
- 
+ 	var http = require('http')
+ 	   ,express = require('express')
+ 	   ,ExpressRoads = require('express-roads')
+ 	   ,app = express();
+ 	 
 	ExpressRoads.initialize(app, {
 	   ,baseDir: __dirname
-    ,routesDir: './src/routes' // Relative to baseDir
+   	   ,routesDir: './src/routes' // Relative to baseDir
     
 	   ,useAPI: true
 	   ,apiBaseDir: './src/routes/api' // Relatives to baseDir
