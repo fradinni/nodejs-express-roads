@@ -1,12 +1,19 @@
-var hello_world = function(req, res, next) {
-	res.send("Hello World !");
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
 }
 
+define(function(require) {
 
-module.exports = [
-	{
-	  	path: "/hello"
-	   ,method: "GET"
-	   ,fn: hello_world
+	var hello_world = function(req, res, next) {
+		res.send("Hello World !");
 	}
-]; 
+
+
+	return [
+		{
+		  	path: "/hello"
+		   ,method: "GET"
+		   ,fn: hello_world
+		}
+	]
+});
