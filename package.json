@@ -1,0 +1,35 @@
+{
+  "name": "express-roads",
+  "description": "NodeJS - Express Application and API Routes Management",
+  "version": "1.0.0",
+  "author":"Nicolas FRADIN",
+  "homepage": "https://github.com/fradinni/nodejs-express-roads",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fradinni/nodejs-express-roads.git"
+  },
+
+  "dependencies": {
+    "amdefine": "x",
+    "requirejs": "x",
+    "express": ">=3.0.x",
+    "underscore": "x"
+  },
+
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "LICENSE"
+    }
+  ],
+
+  "directories": {
+    "lib": "./lib"
+  },
+
+  "main": "./lib/express-roads.js",
+
+  "engines": {
+    "node": "0.10.x"
+  }
+}
