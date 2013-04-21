@@ -14,6 +14,7 @@ define(function(require) {
 		  	path: "/hello"
 		   ,method: "GET"
 		   ,fn: hello_world
+		   ,auth: true
 		}
 	]
 });
