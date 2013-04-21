@@ -37,10 +37,18 @@ requirejs([
 	*/
 	app.use(app.routes);
 
+
+	var authFunction = function(req, res, next) {
+		console.log('Auth');
+		return next();
+	}
+
+
 	// Initialize Express Roads
 	ExpressRoads.initialize(app, {
 		baseDir: __dirname,
 		routesDir: './routes',
+		authFunction: authFunction,
 		debug: true
 	}, function() {
 

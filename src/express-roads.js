@@ -103,6 +103,11 @@ define(function(require) {
 	var APP_MODULES = {};
 
 
+	/**
+	*
+	*/
+	var __authFunction;
+
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -136,6 +141,8 @@ define(function(require) {
 			throw new Error('[Routes] How can we setup routes without a base directory ??? Please specify it {params.routesDir} :)');
 		}
 
+		// Set auth function
+		__authFunction = params.authFunction || null;
 
 		// By default only Javascript files will be loaded
 		__allowedExts = params.allowedExts || ['js'];
@@ -325,6 +332,20 @@ define(function(require) {
 		routeExplicitPath += routePath;
 		if(routeShortcutPath) routeShortcutPath += routePath;
 
+
+		// Build route function
+		if(route.auth) {
+			if(!__authFunction) {
+				throw new Error('[Routes] No auth function is defined ! Please define it to use \'auth\' parameter.')
+			}
+
+			var fn = function(req, res, next) {
+				__authFunction(req, res, function() {
+					route.fn(req, res, next);
+				});
+			}
+		}
+
 		/**
 		* Create correct application route according to 'method'
 		* param of current route
@@ -332,26 +353,26 @@ define(function(require) {
 		switch(route.method.toUpperCase()) {
 			case "GET":
 				if(__DEBUG) logger.log("[Routes] -> Set route: [GET] -> '"+routeExplicitPath+"'" + (routeShortcutPath ? (" [Default]: '"+routeShortcutPath+"'" ) : ''));
-				Application.get(routeExplicitPath, route.fn);
-				if(routeShortcutPath) Application.get(routeShortcutPath, route.fn);
+				Application.get(routeExplicitPath, fn ? fn : route.fn);
+				if(routeShortcutPath) Application.get(routeShortcutPath, fn ? fn : route.fn);
 				break;
 
 			case "POST":
 				if(__DEBUG) logger.log("[Routes] -> Set route: [POST] -> '"+routeExplicitPath+"'" + (routeShortcutPath ? (" [Default]: '"+routeShortcutPath+"'" ) : ''));
-				Application.post(routeExplicitPath, route.fn);
-				if(routeShortcutPath) Application.post(routeShortcutPath, route.fn);
+				Application.post(routeExplicitPath, fn ? fn : route.fn);
+				if(routeShortcutPath) Application.post(routeShortcutPath, fn ? fn : route.fn);
 				break;
 
 			case "PUT":
 				if(__DEBUG) logger.log("[Routes] -> Set route: [PUT] -> '"+routeExplicitPath+"'" + (routeShortcutPath ? (" [Default]: '"+routeShortcutPath+"'" ) : ''));
-				Application.put(routeExplicitPath, route.fn);
-				if(routeShortcutPath) Application.put(routeShortcutPath, route.fn);
+				Application.put(routeExplicitPath, fn ? fn : route.fn);
+				if(routeShortcutPath) Application.put(routeShortcutPath, fn ? fn : route.fn);
 				break;
 
 			case "DELETE":
 				if(__DEBUG) logger.log("[Routes] -> Set route: [DELETE] -> '"+routeExplicitPath+"'" + (routeShortcutPath ? (" [Default]: '"+routeShortcutPath+"'" ) : ''));
-				Application.delete(routeExplicitPath, route.fn);
-				if(routeShortcutPath) Application.delete(routeShortcutPath, route.fn);
+				Application.delete(routeExplicitPath, fn ? fn : route.fn);
+				if(routeShortcutPath) Application.delete(routeShortcutPath, fn ? fn : route.fn);
 				break;
 
 			default:
