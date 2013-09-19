@@ -124,6 +124,7 @@ define(function(require) {
 	var initialize = function(app, params, callback) {
 		params = params || {};
 		__DEBUG = params.debug || false;
+		logger = params.logger || logger;
 
 		logger.log('[Routes] Initialize Express Roads...');
 
